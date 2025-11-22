@@ -1,0 +1,4 @@
+Linux+gcc     > x86_64
+Windows+mingw > mingw64
+Windows+msvc  > msvc
+Mac+gcc       > arm64

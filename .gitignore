@@ -1,0 +1,16 @@
+# Compilation C
+*.o
+*.exe
+chip8
+
+# Dossiers VS Code
+.vscode/
+
+# Documentation Doxygen (On ne versionne pas ce qui est généré)
+docs/html/
+docs/latex/
+# Mais on garde le Doxyfile et le README !
+
+# Fichiers temporaires
+*.log
+.DS_Store
