@@ -46,3 +46,51 @@ Voici la liste des balises (`@`) à utiliser pour documenter le projet efficacem
 ### 4. Exemples de code
 Pour montrer comment utiliser une fonction directement dans la doc :
 * **`@code` ... `@endcode`** : Permet d'insérer un bloc de code coloré.
+
+## Utilisation de Git(hub) 
+
+### Commande de base (dans l'odre)
+* git pull :  !! A faire toujours avant de commencer à travailler !! récupére les modifications de l'autre
+* Tu codes ...
+* Verifier que ca marche toujours make, ./chip8
+* git add .
+* git commit -m "Information sur ce que tu a fait " (Important ++ pour savoir ce que l'autre a fait et pour come back)
+* git push envoie les modifs
+
+### Commande complementaire
+
+* git status : affiche le status, 
+
+        Rouge :Fichier modifié mais pas pris en compte (faire git add)
+
+        Fichier prêt à être validé (faire git commit)
+
+* git log  : affiche le graph des commit 
+
+        --oneline : les recents sur une ligne
+
+        --all : tous
+
+        --graph : fait un graph
+
+* git restore . : efface tous depuis le dernier commit
+
+### Branche
+
+Pour travailler sur deux truc diff en même temps sans se gener
+* git checkout -b nom-de-ma-branche : Crée la branche et te met dessus direct
+* git branch : te dit sur qu'elle branche tu est (branche1 branch2 *BrancheActuelle)
+
+### Merge des branches après un travaille en paralléle
+
+* git .add + git commit !! Pas oublier d'enregistrer (localement) les modif de l'autre branche avant de changer de branche !!
+* git checkout branche1 : revenir sur la branche branche1
+
+         !! toujours commit + add . avant, pour garder les modification sur l'autre branche !!
+
+* git pull : Au cas où il y a eut des modif sur la main
+* git merge branche2 : fusion branche2 avec la branche où l'on est
+* git push : envoie le tous
+* git branch -d branch2 : supprimer branch2 une fois que tous est ok (Pas obligatoire)
+
+
