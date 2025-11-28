@@ -1,6 +1,7 @@
 #Projet CHIP-8 Emulator
 
-Bienvenue dans la documentation de mon projet émulateur chip-8
+Bienvenue dans la documentation de mon projet émulateur chip-8.
+Hello test git-lab
 
 ## Compilation
 
