@@ -39,6 +39,11 @@ int write_RAM(struct RAM *M, int adresse, unsigned int val){
     return 0;
 }
 
+/**
+ * @breif chargé un code chip-8
+ * @param M pointeur vers la RAM
+ * @param filename fichier contenant le code .ch8
+ */
 void load_RAM(struct RAM *M, const char* filename){
     FILE *f = fopen(filename, "rb");
     
