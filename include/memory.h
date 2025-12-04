@@ -6,7 +6,7 @@
 
 /// @brief Création de la ram
 struct RAM{
-    unsigned int *memory;
+    uint8_t *memory;
 };
 
 /**
@@ -15,7 +15,7 @@ struct RAM{
 
 struct RAM * init_RAM(void){
     struct RAM *M = (struct RAM *)malloc(sizeof(struct RAM));
-    M->memory = (unsigned int*)calloc(4096, sizeof(unsigned int));
+    M->memory = (uint8_t*)calloc(4096, sizeof(uint8_t));
     return M;
 }
 /**
@@ -24,7 +24,7 @@ struct RAM * init_RAM(void){
  * @param adresse l'en,droit on on veut read
  * @param out le pointeur ou on stock la val lue
  */
-int read_RAM(struct RAM *M, int adresse, unsigned int *out){
+int read_RAM(struct RAM *M, int adresse, uint8_t *out){
     *out = M->memory[adresse];
     return 0;
 }
@@ -34,7 +34,7 @@ int read_RAM(struct RAM *M, int adresse, unsigned int *out){
  * @param adresse l'en,droit on on veut ecrire
  * @param val la val a ecrire
  */
-int write_RAM(struct RAM *M, int adresse, unsigned int val){
+int write_RAM(struct RAM *M, int adresse, uint8_t val){
     M->memory[adresse] = val;
     return 0;
 }
