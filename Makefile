@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -g -Iinclude
 LDFLAGS = -Llib/x86_64
 LIBS = -lprovided -lSDL2 -lm
 
-SRC = src/memory.c
+SRC = src/main.c src/memory.c src/processor.c
 OBJ = $(SRC:.c=.o)
 TARGET = chip8
 all: $(TARGET)
