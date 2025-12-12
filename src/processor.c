@@ -11,6 +11,7 @@ struct CPU{
     uint8_t DT;
     uint8_t ST;
     uint8_t SP;
+    uint16_t stack[16];
     struct Display * display;
     struct RAM * ram;
 };
@@ -34,68 +35,67 @@ int cpu_cycle(struct CPU *cpu){
     cpu->PC += 2;
 
     printf("Exec: %s\n", instruction_as_str(opcode));
+    
+    uint8_t op = (opcode & 0xF000) >> 12; // Le 1er chiffre (Famille d'instruction)
+    uint8_t x  = (opcode & 0x0F00) >> 8;  // Le 2ème chiffre (Index registre X)
+    uint8_t y  = (opcode & 0x00F0) >> 4;  // Le 3ème chiffre (Index registre Y)
+    uint8_t n  =  opcode & 0x000F;        // Le 4ème chiffre (Hauteur pixel ou autre)
+    uint8_t nn =  opcode & 0x00FF;        // Les 2 derniers (Valeur 8 bits)
+    uint16_t nnn = opcode & 0x0FFF;
 
-    switch (opcode & 0xF000) {
-        case 0x00E0:
-            Display_CLS(cpu->display);
-        case 0x0000:
-            break;
-            
-        case 0x1000:
-            cpu->PC = opcode & 0x0FFF;
-            break;
+    printf("op :%hhu, x : %hhu, y: %hhu, n: %hhu, nn : %hhu, nnn :%hhu\n", op, x, y, n, nn, nnn);
 
-        case 0x6000:
-            {
-                uint8_t x = (opcode & 0x0F00) >> 8;
-                uint8_t kk = opcode & 0x00FF;
-                cpu->Vx[x] = kk;
-            }
-            break;
-            
-        case 0xA000:
-             cpu->I = opcode & 0x0FFF;
-             break;
-             
-        case 0xD000:
-            uint8_t vx_idx = (opcode & 0x0F00) >> 8;
-            uint8_t vy_idx = (opcode & 0x00F0) >> 4;
-            uint8_t height = opcode & 0x000F;
-
-            uint8_t x_pos = cpu->Vx[vx_idx];
-            uint8_t y_pos = cpu->Vx[vy_idx];
-
-            cpu->Vx[0xF] = 0;
-
-            // Indique qu'on va toucher à l'écran
-            int dessin_effectue = 0; 
-
-            for (int row = 0; row < height; row++) {
-                uint8_t sprite_byte = 0;
-                read_RAM(cpu->ram, cpu->I + row, &sprite_byte);
-
-                for (int col = 0; col < 8; col++) {
-                    if ((sprite_byte & (0x80 >> col)) != 0) {
-                        int screen_x = (x_pos + col) % 64; 
-                        int screen_y = (y_pos + row) % 32;
-
-                        if (cpu->display->contents[screen_x][screen_y] == 1) {
-                            cpu->display->contents[screen_x][screen_y] = 0;
-                            cpu->Vx[0xF] = 1;
-                        } else {
-                            cpu->display->contents[screen_x][screen_y] = 1;
-                        }
-                        // On note qu'on a modifié au moins un pixel
-                        dessin_effectue = 1;
-                    }
+    switch (op){
+        case 0x0:
+            if (opcode == 0x00E0 && cpu->display){
+                (void)Display_CLS(cpu->display);
+            }else if(opcode == 0x00EE){
+                if (cpu->SP == 0){
+                    fprintf(stderr, "Stack underflow at RET!\n");
+                    exit(1);
                 }
+                cpu->PC = cpu->stack[--cpu->SP];
             }
+            break;
+
+        case 0x1:
+            cpu->PC = nnn;
+            break;
             
-            // --- AJOUT CRUCIAL ICI ---
-            if (dessin_effectue) {
-                cpu->display->modified = 1;
+        case 0x2:
+            if (cpu->SP >= 16){
+                fprintf(stderr, "Stack overflow at CALL!\n");
+                exit(1);
             }
-            break; 
+            cpu->stack[cpu->SP++] = cpu->PC;
+            cpu->PC = nnn;
+            break;
+
+        case 0x6:
+            cpu->Vx[x] = nn;
+            break;
+        
+        case 0xA:
+            cpu->I = nnn;
+            break;
+
+        case 0xD: {
+            struct Sprite spr;
+            if (Sprite_init(&spr, n) != 0) break;
+            for (uint8_t i =0; i<n; i++){
+                uint8_t b = 0;
+                read_RAM(cpu->ram, (uint16_t)(cpu->I +i), &b);
+                Sprite_add(&spr, b);
+            }
+            uint8_t VF = 0;
+            if (cpu->display){
+                (void)Display_DRW(cpu->display, &spr, cpu->Vx[x], cpu->Vx[y], &VF);
+            }
+            cpu->Vx[0xF] = VF ? 1 :0;
+            break;
         }
-        return 0;
+        default:
+            break;
     }
+    return 0;
+}
