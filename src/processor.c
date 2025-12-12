@@ -36,6 +36,8 @@ int cpu_cycle(struct CPU *cpu){
     printf("Exec: %s\n", instruction_as_str(opcode));
 
     switch (opcode & 0xF000) {
+        case 0x00E0:
+            Display_CLS(cpu->display);
         case 0x0000:
             break;
             
@@ -56,12 +58,44 @@ int cpu_cycle(struct CPU *cpu){
              break;
              
         case 0xD000:
-             break;
+            uint8_t vx_idx = (opcode & 0x0F00) >> 8;
+            uint8_t vy_idx = (opcode & 0x00F0) >> 4;
+            uint8_t height = opcode & 0x000F;
 
-        default:
-            printf("Instruction inconnue : %04X\n", opcode);
-            break;
+            uint8_t x_pos = cpu->Vx[vx_idx];
+            uint8_t y_pos = cpu->Vx[vy_idx];
+
+            cpu->Vx[0xF] = 0;
+
+            // Indique qu'on va toucher à l'écran
+            int dessin_effectue = 0; 
+
+            for (int row = 0; row < height; row++) {
+                uint8_t sprite_byte = 0;
+                read_RAM(cpu->ram, cpu->I + row, &sprite_byte);
+
+                for (int col = 0; col < 8; col++) {
+                    if ((sprite_byte & (0x80 >> col)) != 0) {
+                        int screen_x = (x_pos + col) % 64; 
+                        int screen_y = (y_pos + row) % 32;
+
+                        if (cpu->display->contents[screen_x][screen_y] == 1) {
+                            cpu->display->contents[screen_x][screen_y] = 0;
+                            cpu->Vx[0xF] = 1;
+                        } else {
+                            cpu->display->contents[screen_x][screen_y] = 1;
+                        }
+                        // On note qu'on a modifié au moins un pixel
+                        dessin_effectue = 1;
+                    }
+                }
+            }
+            
+            // --- AJOUT CRUCIAL ICI ---
+            if (dessin_effectue) {
+                cpu->display->modified = 1;
+            }
+            break; 
+        }
+        return 0;
     }
-    return 0;
-}
-

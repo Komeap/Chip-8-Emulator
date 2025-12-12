@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <SDL2/SDL.h>
+
 #include "../include/display/display.h"
 #include "../include/memory.h"
 #include "misc/debug.h"
@@ -17,5 +22,9 @@ int main(void) {
     struct Display *monDisplay = (struct Display*)calloc(1, sizeof(struct Display));
     Display_init(monDisplay, 10);
     struct CPU *monCPU = init_CPU(maMemoire, monDisplay);
-    cpu_cycle(monCPU);
+    
+    for(int i =0; i < 41 ; i++){
+        cpu_cycle(monCPU);
+        usleep(50000);
+    }
 }
