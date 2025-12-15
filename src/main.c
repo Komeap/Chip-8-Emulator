@@ -16,7 +16,7 @@ int main(void) {
 
     //printf("%d\n", load_RAM(maMemoire, "/home/julien/Cours/Chip-8_Project/1-chip8-logo.ch8"));
 
-    int rom_size = load_RAM(maMemoire, "/home/julien/Cours/Chip-8_Project/1-chip8-logo.ch8");
+    int rom_size = load_RAM(maMemoire, "chip8_load/2-ibm-logo.ch8");
     if (rom_size == -1) {
         printf("Erreur lors du chargement de la ROM\n");
         return 1;
@@ -26,14 +26,12 @@ int main(void) {
     //print_RAM(maMemoire);
 
     //printf("%s\n",instruction_as_str((uint16_t)0xFF));
-    //print_instruct(maMemoire);
+    print_instruct(maMemoire);
     struct Display *monDisplay = (struct Display*)calloc(1, sizeof(struct Display));
     if (Display_init(monDisplay, 10) != 0) {
         fprintf(stderr, "Erreur: Impossible d'initialiser l'affichage.\n");
         return 1;
     }
-
-    Display_set_colors(monDisplay, 0, 0, 0, 255, 255, 255);
 
     struct CPU *monCPU = init_CPU(maMemoire, monDisplay);
 
@@ -42,13 +40,12 @@ int main(void) {
     bool running = true;
     SDL_Event event;
 
-    while (running) {
+    for (int i  = 0; i < 100; i++) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = false;
             }
         }
-
         cpu_cycle(monCPU);
         Display_update(monDisplay);
         usleep(50);
