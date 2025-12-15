@@ -40,7 +40,7 @@ int main(void) {
     bool running = true;
     SDL_Event event;
 
-    for (int i  = 0; i < 100; i++) {
+    for (int i  = 0; i < 2000; i++) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = false;
@@ -48,7 +48,7 @@ int main(void) {
         }
         cpu_cycle(monCPU);
         Display_update(monDisplay);
-        usleep(50);
+        usleep(50000000);
     }
     
     printf("Fermeture de l'émulateur.\n");

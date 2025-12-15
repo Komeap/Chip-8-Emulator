@@ -71,8 +71,18 @@ int cpu_cycle(struct CPU *cpu){
             cpu->PC = nnn;
             break;
 
+        case 0x3:
+            if (cpu->Vx[x] == nn) {
+                cpu->PC += 2;
+            }
+            break;
+
         case 0x6:
             cpu->Vx[x] = nn;
+            break;
+        
+        case 0x7:
+            cpu->Vx[x] += nn;
             break;
         
         case 0xA:
