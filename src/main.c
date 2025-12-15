@@ -51,7 +51,7 @@ int main(void) {
 
         cpu_cycle(monCPU);
         Display_update(monDisplay);
-        usleep(50000);
+        usleep(50);
     }
     
     printf("Fermeture de l'émulateur.\n");
