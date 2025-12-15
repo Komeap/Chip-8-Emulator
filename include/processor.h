@@ -6,10 +6,12 @@
 #include <stddef.h>
 #include "display/display.h"
 #include "misc/debug.h"
+#include "keyboard/keyboard.h"
+#include "speaker/speaker.h"
 
 
 struct Display;
-struct CPU *init_CPU(struct RAM *ram, struct Display *disp);
+struct CPU *init_CPU(struct RAM *ram, struct Display *disp, struct Keyboard *keyboard, struct Speaker *speaker);
 int cpu_cycle(struct CPU *cpu);
 
 #endif
