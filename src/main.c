@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_audio.h>
 #include <time.h>
 
 #include "../include/display/display.h"
@@ -10,7 +11,6 @@
 #include "misc/debug.h"
 #include "../include/processor.h"
 #include "../include/keyboard/keyboard.h"
-
 
 
 int main(void) {
@@ -43,7 +43,7 @@ int main(void) {
     }
 
     struct Speaker *MySpeaker = (struct Speaker*)calloc(1, sizeof(struct Speaker));
-    if (Keyboard_init(MySpeaker) != 0) {
+    if (Speaker_init(MySpeaker) != 0) {
         fprintf(stderr, "Erreur: Impossible d'initialiser l'affichage.\n");
         return 1;
     }
@@ -56,7 +56,30 @@ int main(void) {
     bool running = true;
     SDL_Event event;
 
-    while (1) {
+    Uint32 last_tick = SDL_GetTicks();
+    double delta_accumulator = 0;
+    
+    int instructions_par_frame = 10;
+    SDL_Keycode keymap[16] = {
+    SDLK_x, // 0
+    SDLK_1, // 1
+    SDLK_2, // 2
+    SDLK_3, // 3
+    SDLK_a, // 4 
+    SDLK_z, // 5 
+    SDLK_e, // 6
+    SDLK_q, // 7 
+    SDLK_s, // 8
+    SDLK_d, // 9
+    SDLK_w, // A 
+    SDLK_c, // B
+    SDLK_4, // C
+    SDLK_r, // D
+    SDLK_f, // E
+    SDLK_v  // F
+};
+
+    /*while (1) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = false;
@@ -65,12 +88,39 @@ int main(void) {
         cpu_cycle(monCPU);
         Display_update(monDisplay);
         usleep(0);
-    }
+    }*/
     
+    while (running) {
+        Uint32 current_tick = SDL_GetTicks();
+        double dt = (current_tick - last_tick);
+        last_tick = current_tick;
+        delta_accumulator += dt;
+
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                running = false;
+            }
+        }
+        if (delta_accumulator >= 1.5) {
+            delta_accumulator -= 1.5;
+            for (int i = 0; i < instructions_par_frame; i++) {
+                cpu_cycle(monCPU);
+            }
+            cpu_update_timers(monCPU);
+            Display_update(monDisplay);
+        }
+
+        SDL_Delay(1);
+    }
+
     printf("Fermeture de l'émulateur.\n");
     Display_destroy(monDisplay);
+    Speaker_destroy(MySpeaker);
     free(monDisplay);
-    // Ajoutez free(maMemoire) et free(monCPU) si vous avez les fonctions pour.
+    free(MySpeaker);
+
+    
+    
     
     return 0;
 }
