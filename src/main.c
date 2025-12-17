@@ -13,18 +13,21 @@
 #include "../include/keyboard/keyboard.h"
 
 
-int main(void) {
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s <fichier_rom>\n", argv[0]);
+        return 1;
+    }
     srand(time(NULL));
     struct RAM *maMemoire = init_RAM();
 
     //printf("%d\n", load_RAM(maMemoire, "/home/julien/Cours/Chip-8_Project/1-chip8-logo.ch8"));
 
-    int rom_size = load_RAM(maMemoire, "chip8_load/HIDDEN");
-    if (rom_size == -1) {
-        printf("Erreur lors du chargement de la ROM\n");
+
+    if (load_RAM(maMemoire, argv[1]) == 0) {
+        fprintf(stderr, "Erreur chargement ROM.\n");
         return 1;
     }
-    printf("ROM chargée, taille: %d bytes\n", rom_size);
     
     //print_RAM(maMemoire);
 
@@ -93,8 +96,8 @@ int main(void) {
                 running = false;
             }
         }
-        if (delta_accumulator >= 1.5) {
-            delta_accumulator -= 1.5;
+        if (delta_accumulator >= 15) {
+            delta_accumulator -= 15;
             for (int i = 0; i < instructions_par_frame; i++) {
                 cpu_cycle(monCPU);
             }
