@@ -19,7 +19,7 @@ int main(void) {
 
     //printf("%d\n", load_RAM(maMemoire, "/home/julien/Cours/Chip-8_Project/1-chip8-logo.ch8"));
 
-    int rom_size = load_RAM(maMemoire, "chip8_load/7-beep.ch8");
+    int rom_size = load_RAM(maMemoire, "chip8_load/HIDDEN");
     if (rom_size == -1) {
         printf("Erreur lors du chargement de la ROM\n");
         return 1;
@@ -29,7 +29,7 @@ int main(void) {
     //print_RAM(maMemoire);
 
     //printf("%s\n",instruction_as_str((uint16_t)0xFF));
-    print_instruct(maMemoire);
+    //print_instruct(maMemoire);
     struct Display *monDisplay = (struct Display*)calloc(1, sizeof(struct Display));
     if (Display_init(monDisplay, 10) != 0) {
         fprintf(stderr, "Erreur: Impossible d'initialiser l'affichage.\n");
@@ -47,6 +47,8 @@ int main(void) {
         fprintf(stderr, "Erreur: Impossible d'initialiser l'affichage.\n");
         return 1;
     }
+
+    Display_set_colors(monDisplay, 155,155,155,155,52,230);
 
 
     struct CPU *monCPU = init_CPU(maMemoire, monDisplay, MyKeyboard, MySpeaker);
@@ -79,16 +81,6 @@ int main(void) {
     SDLK_v  // F
 };
 
-    /*while (1) {
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                running = false;
-            }
-        }
-        cpu_cycle(monCPU);
-        Display_update(monDisplay);
-        usleep(0);
-    }*/
     
     while (running) {
         Uint32 current_tick = SDL_GetTicks();
@@ -119,8 +111,5 @@ int main(void) {
     free(monDisplay);
     free(MySpeaker);
 
-    
-    
-    
     return 0;
 }
