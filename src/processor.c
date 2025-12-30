@@ -116,31 +116,36 @@ int cpu_cycle(struct CPU *cpu){
                     cpu->Vx[x] ^= cpu->Vx[y];
                     break;
 
-                case 0x4:
+                case 0x4: {
                     uint16_t sum = cpu->Vx[x] + cpu->Vx[y];
-                    cpu->Vx[0xF] = (sum > 255);
+                    uint8_t new_vf = (sum > 255);
                     cpu->Vx[x] = sum & 0xFF;
-                    break;
+                    cpu->Vx[0xF] = new_vf;
+                } break;
 
-                case 0x5:
-                    cpu->Vx[0xF] = (cpu->Vx[x] >= cpu->Vx[y]);
+                case 0x5: {
+                    uint8_t new_vf = (cpu->Vx[x] >= cpu->Vx[y]);
                     cpu->Vx[x] -= cpu->Vx[y];
-                    break;
+                    cpu->Vx[0xF] = new_vf;
+                } break;
 
-                case 0x6:
-                    cpu->Vx[0xF] = cpu->Vx[x] & 0x1;
+                case 0x6: {
+                    uint8_t new_vf = cpu->Vx[x] & 0x1;
                     cpu->Vx[x] >>= 1;
-                    break;
+                    cpu->Vx[0xF] = new_vf;
+                } break;
 
-                case 0x7:
-                    cpu->Vx[0xF] = (cpu->Vx[y] >= cpu->Vx[x]);
+                case 0x7: {
+                    uint8_t new_vf = (cpu->Vx[y] >= cpu->Vx[x]);
                     cpu->Vx[x] = cpu->Vx[y] - cpu->Vx[x];
-                    break;
+                    cpu->Vx[0xF] = new_vf;
+                } break;
 
-                case 0xE:
-                    cpu->Vx[0xF] = (cpu->Vx[x] >> 7) & 0x1;
+                case 0xE: {
+                    uint8_t new_vf = (cpu->Vx[x] >> 7) & 0x1;
                     cpu->Vx[x] <<= 1;
-                    break;
+                    cpu->Vx[0xF] = new_vf;
+                } break;
             }
             break;
 
