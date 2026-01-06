@@ -14,5 +14,6 @@ struct Display;
 struct CPU *init_CPU(struct RAM *ram, struct Display *disp, struct Keyboard *keyboard, struct Speaker *speaker);
 int cpu_cycle(struct CPU *cpu);
 void cpu_update_timers(struct CPU *cpu);
+void free_CPU(struct CPU *cpu);
 
 #endif

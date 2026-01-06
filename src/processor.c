@@ -56,7 +56,9 @@ int cpu_cycle(struct CPU *cpu){
             if (opcode == 0x00E0) {
                 if(cpu->display) Display_CLS(cpu->display);
             } else if (opcode == 0x00EE) {
-                if (cpu->SP == 0) return; // Error handled silently
+                if (cpu->SP == 0){
+                    return 0;
+                }
                 cpu->PC = cpu->stack[--cpu->SP];
             }
             break;
@@ -67,7 +69,7 @@ int cpu_cycle(struct CPU *cpu){
 
         case 0x2:
             if (cpu->SP >= 16){
-                return;
+                return 0;
             }
             cpu->stack[cpu->SP++] = cpu->PC;
             cpu->PC = nnn;
@@ -106,14 +108,17 @@ int cpu_cycle(struct CPU *cpu){
 
                 case 0x1: 
                     cpu->Vx[x] |= cpu->Vx[y]; 
+                    cpu->Vx[0xF] = 0;
                     break;
 
                 case 0x2: 
                     cpu->Vx[x] &= cpu->Vx[y];
+                    cpu->Vx[0xF] = 0;
                     break;
 
                 case 0x3:
                     cpu->Vx[x] ^= cpu->Vx[y];
+                    cpu->Vx[0xF] = 0;
                     break;
 
                 case 0x4: {
@@ -130,6 +135,7 @@ int cpu_cycle(struct CPU *cpu){
                 } break;
 
                 case 0x6: {
+                    cpu->Vx[x] = cpu->Vx[y];
                     uint8_t new_vf = cpu->Vx[x] & 0x1;
                     cpu->Vx[x] >>= 1;
                     cpu->Vx[0xF] = new_vf;
@@ -142,6 +148,7 @@ int cpu_cycle(struct CPU *cpu){
                 } break;
 
                 case 0xE: {
+                    cpu->Vx[x] = cpu->Vx[y];
                     uint8_t new_vf = (cpu->Vx[x] >> 7) & 0x1;
                     cpu->Vx[x] <<= 1;
                     cpu->Vx[0xF] = new_vf;
@@ -255,17 +262,21 @@ int cpu_cycle(struct CPU *cpu){
                 case 0x55:
                     for (int i = 0; i <= x; i++){
                         write_RAM(cpu->ram, cpu->I + i, cpu->Vx[i]);
+                        
                     } 
+                    cpu->I += x + 1;
                     break;
 
                 case 0x65:
                     for (int i = 0; i <= x; i++){
                         read_RAM(cpu->ram, cpu->I + i, &cpu->Vx[i]);
                     }
+                    cpu->I += x + 1;
                     break;
             }
             break;
     }
+    return 0;
 }
 
 void cpu_update_timers(struct CPU *cpu) {
@@ -279,4 +290,8 @@ void cpu_update_timers(struct CPU *cpu) {
     } else {
         Speaker_off(cpu->speaker);
     }
+}
+
+void free_CPU(struct CPU *cpu){
+    free(cpu);
 }

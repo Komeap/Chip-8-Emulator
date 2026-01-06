@@ -110,4 +110,10 @@ void print_instruct(struct RAM *M) {
     }
 }
 
-
+void free_RAM(struct RAM *M){
+    if (M != NULL) {
+        if (M->memory != NULL) {
+            free(M->memory);
+        }
+    }
+}

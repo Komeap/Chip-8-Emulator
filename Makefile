@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g -Iinclude
 LDFLAGS = -Llib/x86_64
-LIBS = -lprovided -lSDL2 -lm
+LIBS = -lprovided -lSDL2 -lm -lSDL2_ttf
 
 SRC = src/main.c src/memory.c src/processor.c
 OBJ = $(SRC:.c=.o)
