@@ -115,5 +115,6 @@ void free_RAM(struct RAM *M){
         if (M->memory != NULL) {
             free(M->memory);
         }
+        free(M);
     }
 }

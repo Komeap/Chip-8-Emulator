@@ -79,7 +79,7 @@ int run_menu() {
     int selection = 0;
     bool in_menu = true;
     int result = -1;
-    SDL_Event event;
+    SDL_Event event = {0};
 
     /// gestion du nombre d'item par colonne pour que ca reste dans la page
     int items_per_col = (ROM_COUNT + 1) / 2;
@@ -198,7 +198,7 @@ bool run_game(const char *rom_path, struct Display *monDisplay, struct Keyboard 
     
     bool running = true;
     /// Variable de gestion du temps, et des frames
-    SDL_Event event;
+    SDL_Event event = {0};
     Uint32 last_tick = SDL_GetTicks();
     double delta_accumulator = 0;
     int instructions_par_frame = 20;
@@ -245,6 +245,12 @@ bool run_game(const char *rom_path, struct Display *monDisplay, struct Keyboard 
 
 int main() {
     srand(time(NULL));
+
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+        fprintf(stderr, "Erreur SDL_Init: %s\n", SDL_GetError());
+        return -1;
+    }
+
     /// init
     struct Display *monDisplay = (struct Display*)calloc(1, sizeof(struct Display));
     struct Keyboard *MyKeyboard = (struct Keyboard*)calloc(1, sizeof(struct Keyboard));
@@ -262,13 +268,18 @@ int main() {
             app_running = false;
         } else {
             // Lance une ROM
+            Speaker_init(MySpeaker);
             bool back = run_game(ROM_LIST[choix], monDisplay, MyKeyboard, MySpeaker);
+            Speaker_destroy(MySpeaker);
             if (!back) app_running = false;
         }
     }
 
     // Fermeture Propre
     free(monDisplay);
+
+    Keyboard_destroy(MyKeyboard);
+    // Speaker déjà détruit dans la boucle
     free(MyKeyboard);
     free(MySpeaker);
     SDL_Quit();
