@@ -187,7 +187,9 @@ int cpu_cycle(struct CPU *cpu){
             }
             cpu->Vx[0xF] = vf;
             Sprite_destroy(&spr);
-        } break;
+
+            return 1;
+        }
 
         case 0xE: {
             int state = KEY_UP;

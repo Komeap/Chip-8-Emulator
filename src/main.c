@@ -226,7 +226,8 @@ bool run_game(const char *rom_path, struct Display *monDisplay, struct Keyboard 
         while (delta_accumulator >= 15) {
             delta_accumulator -= 15;
             for (int i = 0; i < instructions_par_frame; i++) {
-                cpu_cycle(monCPU); /// Décodage de opcode
+                int result = cpu_cycle(monCPU); /// Décodage de opcode
+                if (result == 1) break;
             }
             cpu_update_timers(monCPU); /// Fonction qui gére le temps
         }
