@@ -201,7 +201,7 @@ bool run_game(const char *rom_path, struct Display *monDisplay, struct Keyboard 
     SDL_Event event = {0};
     Uint32 last_tick = SDL_GetTicks();
     double delta_accumulator = 0;
-    int instructions_par_frame = 20;
+    int instructions_par_frame = 20; /// vitesse du jeu
     
     while (running) {
         /// Gestion des ticks, pour le timer, frames et halting
@@ -222,7 +222,7 @@ bool run_game(const char *rom_path, struct Display *monDisplay, struct Keyboard 
             }
         }
 
-        /// Gestion des frame et de la vitesse de jeu
+        /// Gestion des frame et de la vitesse de jeu 15ms == 66Hz
         while (delta_accumulator >= 15) {
             delta_accumulator -= 15;
             for (int i = 0; i < instructions_par_frame; i++) {
